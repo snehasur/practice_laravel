@@ -1,66 +1,158 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+https://docs.google.com/document/d/1-L1dRFWPhFYKzONX3n4W6zsd9hl9gC-IUOrhnx2kDqA/edit?tab=t.0
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Goals
+Generate a table called details to save additional user background information
+Implement an event called UserSaved triggered when a user is created or updated
+Implement a listener that auto-saves additional user details when the UserSaved event is triggered
 
-## About Laravel
+Instructions
+Create a migration file for a table called details. Use the following table for reference on the columns: mysql> show columns from details
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+mysql> show columns from details;
+| Null | Key | Default | Extra
+| bigint unsigned | NO | PRI❘ NULL | varchar(255)
+| Field
+| Type
+| id | key
+auto_increment |
+| NO | MUL | NULL
+| value
+| text
+| YES |
+| NULL
+I
+| icon
+| varchar(255)
+| YES |
+| NULL
+| status
+| varchar(255) | NO |
+| 1
+| type
+| varchar(255)
+| YES |
+| detail |
+| user_id
+| created_at
+timestamp
+| YES |
+| NULL
+| YES |
+| NULL
+| bigint unsigned | YES | MUL | NULL
+updated_at | timestamp
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Generate an Eloquent Model file app/Detail.php.
+Assign a one-to-many relationship between App\User model and App\Detail model.
+Create an Event class app/Events/UserSaved.
+Map the UserSaved Event class on App\User Eloquent Model's saved event.
+Create a Listener class app/Listeners/SaveUserBackgroundInformation.php.
+Inject the UserService class on SaveUserBackgroundInformation@\_\_construct.
+Add a method in the UserService class to handle saving of user details.
+The listener should save to a table called details the following information:
+The user's full name based on firstname, middlename, and lastname.
+The user's middle initial based on abbreviating the middlename.
+The user's avatar based on a given photo
+The user's gender based on the value of prefixname.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Example data:
+for a user with attributes of:
+{
+id: 1,
+prefixname: 'Mr.',
+firstname: 'Juan',
+middlename: 'Palito',
+lastname: 'dela Cruz',
+suffixname: 'Jr.',
+username: 'juantwothree',
+email: 'juan@demo.ph',
+photo: null,
+type: 'user',
+}
 
-## Learning Laravel
+✎ Notes
+The column details.user_id must be a foreign key that references users.id and cascades on DELETE and UPDATE
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+php artisan make:migration create_details_table
+php artisan migrate
+php artisan make:model Detail
+php artisan make:event UserSaved
+php artisan make:listener SaveUserBackgroundInformation
+touch app/Providers/EventServiceProvider.php
+php artisan event:clear
+php artisan event:cache
+mkdir app/Services
+touch app/Services/UserService.php
+composer dump-autoload
+php artisan cache:clear
+php artisan config:clear
+php artisan make:migration add_user_columns_to_users_table
+php artisan make:migration modify_users_table_allow_null_name_password --table=users
+php artisan migrate:fresh
+remove EventServiceProvider
+php artisan make:seeder UserSeeder
+php artisan db:seed
+php artisan make:factory UserFactory --model=User
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+step to setup
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Laravel Project Setup and Run
+This guide covers the setup of a Laravel project, including the generation of the details table, triggering events, saving user background information, and testing the functionality.
 
-## Laravel Sponsors
+Prerequisites
+Ensure the following are installed:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+PHP (>= 8.0)
+Composer
+MySQL (or compatible database)
+Laravel (version 9 or above)
+Step 1: Clone the Repository
+Clone the project repository to your local machine:
 
-### Premium Partners
+git clone https://github.com/your-username/your-repo-name.git
+cd your-repo-name
+Step 2: Install Dependencies
+Run the following to install the project dependencies via Composer:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+composer install
+Step 3: Set Up Environment File
+Copy the .env.example file to .env:
 
-## Contributing
+cp .env.example .env
+Step 4: Generate Application Key
+Generate a unique application key:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+php artisan key:generate
+This will set the APP_KEY in the .env file.
 
-## Code of Conduct
+Step 5: Configure Database
+Create a new MySQL database (e.g., your_database_name).
+Update the .env file with your database details:
+env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database_name
+DB_USERNAME=your_database_user
+DB_PASSWORD=your_database_password
+Step 6: Run Migrations
+Run the migrations to create necessary tables:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+php artisan migrate
+Step 7: Seed the Database
+To populate the database with sample data (users):
 
-## Security Vulnerabilities
+php artisan db:seed
+This will run the database seeder, which may include sample user data.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Step 8: Run the Development Server
+Start the development server:
 
-## License
+php artisan serve
+The app will run at http://127.0.0.1:8000.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Step 9: Test the Application
+Create or Update Users: The UserSaved event will trigger and automatically save additional user details in the details table.
+Check the details Table: Verify the extra user information (full name, middle initial, avatar, gender) is saved.
+
+This step-by-step guide sets up the project, configures the database, runs migrations, seeds the data, and provides the necessary commands to test and interact with the application.
